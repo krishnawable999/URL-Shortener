@@ -25,7 +25,7 @@ app.use("/test", async(req,res)=>{
 });
 app.use(coockieParcer());
 app.use(checkforAuthentication);
-app.use("/url",restrictTo("[NORMAL]"),urlRoute);
+app.use("/url",restrictTo(["NORMAL"],["ADMIN"]),urlRoute);
 app.use("/user",userRoute);
 app.use("/",staticRoute);
 
