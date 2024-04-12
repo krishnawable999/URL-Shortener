@@ -6,7 +6,7 @@ const port = 8001;
 const path = require("path");
 const coockieParcer = require("cookie-parser");
 app.set("views",path.resolve("./views"));
-const {restrictToLoginuserOnly,checkAuth} = require("./middleware/auth");
+const {checkforAuthentication,restrictTo} = require("./middleware/auth");
 
 connectToMongoDB("mongodb://127.0.0.1:27017/short-url").then(()=>console.log("Connected to MongoDB"));
 
@@ -24,11 +24,10 @@ app.use("/test", async(req,res)=>{
     })
 });
 app.use(coockieParcer());
-
-app.use("/url",restrictToLoginuserOnly,urlRoute);
+app.use(checkforAuthentication);
+app.use("/url",restrictTo("[NORMAL]"),urlRoute);
 app.use("/user",userRoute);
-app.use("/",checkAuth,staticRoute);
-
+app.use("/",staticRoute);
 
 app.set("view engine","ejs");
 
