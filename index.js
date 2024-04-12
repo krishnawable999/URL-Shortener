@@ -4,6 +4,10 @@ const app = express();
 const URL = require("./models/url");
 const port = 8001;
 const path = require("path");
+const coockieParcer = require("cookie-parser");
+app.set("views",path.resolve("./views"));
+const {restrictToLoginuserOnly,checkAuth} = require("./middleware/auth");
+
 connectToMongoDB("mongodb://127.0.0.1:27017/short-url").then(()=>console.log("Connected to MongoDB"));
 
 const staticRoute = require("./routes/staticRouter")
@@ -19,14 +23,14 @@ app.use("/test", async(req,res)=>{
         urls: allUrls
     })
 });
+app.use(coockieParcer());
 
-app.use("/url",urlRoute);
+app.use("/url",restrictToLoginuserOnly,urlRoute);
 app.use("/user",userRoute);
-app.use("/",staticRoute);
+app.use("/",checkAuth,staticRoute);
 
 
 app.set("view engine","ejs");
-app.set("views",path.resolve("./views"));
 
 
 app.get('/:shortId', async(req,res)=>{
